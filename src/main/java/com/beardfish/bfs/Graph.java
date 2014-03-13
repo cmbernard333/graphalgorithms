@@ -1,7 +1,7 @@
 package com.beardfish.bfs;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -13,7 +13,7 @@ public class Graph<E> {
     Map<E,Set<E>> adjList;
 
     public Graph() {
-        this.adjList = new HashMap<E,Set<E>>();
+        this.adjList = new LinkedHashMap<E,Set<E>>();
     }
 
     /**
