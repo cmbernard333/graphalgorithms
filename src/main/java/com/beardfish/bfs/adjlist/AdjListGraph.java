@@ -9,10 +9,12 @@ import java.util.*;
  */
 public class AdjListGraph<E,V> {
 
-    public final Map<V,Vertex> graph;
+    public final Map<V,Vertex> vertices;
+    public final Map<VertexPair,Path> paths;
 
     public AdjListGraph () {
-        this.graph = new HashMap<V,Vertex>();
+        this.vertices = new HashMap<V,Vertex>();
+        this.paths = new ConcurrentHashMap<VertexPair,Path>();
     }
 
     public boolean addEdge(V src, V dst) {
@@ -24,12 +26,12 @@ public class AdjListGraph<E,V> {
         Vertex srcVert = this.getVertex(src);
         if(srcVert==null) {
             srcVert = new Vertex(src);
-            this.graph.put(src,srcVert);
+            this.vertices.put(src, srcVert);
         }
         Vertex dstVert = this.getVertex(dst);
         if(dstVert==null) {
             dstVert = new Vertex(dst);
-            this.graph.put(dst,new Vertex(dst));
+            this.vertices.put(dst, new Vertex(dst));
         }
         /* verify the edge */
         Edge edge = this.getEdge(srcVert,dstVert);
@@ -60,7 +62,7 @@ public class AdjListGraph<E,V> {
     }
 
     public Vertex getVertex(V source) {
-        return this.graph.get(source);
+        return this.vertices.get(source);
     }
 
     public boolean removeEdge(V src, V dst) {
@@ -74,7 +76,51 @@ public class AdjListGraph<E,V> {
     }
 
     /**
-     * Represents an edge between two vertices in a graph
+     * Return a path object repesenting the shortest path between two values
+     * @param src - value
+     * @param dst - value
+     * @return Path object
+     */
+    public Path getShortestPath(V src, V dst) {
+        /* check to make sure vertices exist */
+        Vertex srcVert = this.getVertex(src);
+        if(srcVert==null) { return null; }
+        Vertex dstVert = this.getVertex(dst);
+        if(dstVert==null) { return null; }
+        /* check for direct edge between nodes */
+        Edge edge = this.getEdge(srcVert,dstVert);
+        Path path = null;
+        if(edge!=null) {
+            path = new Path();
+            path.addEdge(edge);
+            return path;
+        }
+        /* build the min prority queue */
+        Map<Vertex,Node> nodes = new HashMap<Vertex,Node>();
+        for (Vertex v : this.vertices.values()) {
+            Node n = new Node(v);
+            if(v==srcVert) {
+                n.distance = 0;
+            }
+            nodes.put(v,n);
+        }
+        /* chart the course!*/
+        Set<Node> otherNodes = new HashSet<Node>(nodes.values());
+        Set<Node> nodesOnPath = new HashSet<Node>();
+        Node nextNode = null;
+        while(!otherNodes.isEmpty()) {
+//            nextNode = extractMin(otherNodes);
+//            if(nextNode==dstVert) {
+//
+//            }
+//            nodesOnPath.add(nextNode);
+        }
+
+
+    }
+
+    /**
+     * Represents an edge between two vertices in a vertices
      */
     public final class Edge {
 
@@ -99,7 +145,7 @@ public class AdjListGraph<E,V> {
     }
 
     /**
-     * Represents a vertex in a graph with a particular value
+     * Represents a vertex in a vertices with a particular value
      */
     public final class Vertex {
 
@@ -135,6 +181,59 @@ public class AdjListGraph<E,V> {
         public void addEdge(Edge edge) {
             this.edges.add(edge);
             this.weight += edge.weight;
+        }
+    }
+
+    /**
+     * Node class representing a vertex with a distance from another vertex
+     */
+    public final class Node implements Comparable<Node>{
+        public Vertex value;
+        public Node previous;
+        private long distance = Integer.MAX_VALUE;
+
+        public Node(Vertex v) {
+            this.value = v;
+        }
+
+        @Override
+        public int compareTo(Node node) {
+            if(this.distance>node.distance) {
+                return 1;
+            } else if(this.distance==node.distance) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+
+    }
+
+    private final class VertexPair {
+
+        private Vertex src;
+        private Vertex dst;
+
+        private VertexPair(Vertex src, Vertex dst) {
+            this.src = src;
+            this.dst = dst;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if(!this.getClass().equals(o.getClass())) {
+                return false;
+            }
+            VertexPair pair = (VertexPair) o;
+            return this.src == pair.src && this.dst == pair.dst;
+        }
+
+        @Override
+        public int hashCode() {
+            int h = 0;
+            h+= this.src == null ? 0 : src.hashCode();
+            h+= this.dst == null ? 0 : dst.hashCode();
+            return h;
         }
     }
 }

@@ -18,7 +18,7 @@ public class AdjListGraphTest {
     @Test
     public void testGraphBFS() {
         AdjListGraph<Character> charGraph = new AdjListGraph<Character>();
-        /* add nodes to the graph */
+        /* add nodes to the vertices */
         charGraph.addEdge('a', 'b');
         charGraph.addEdge('a', 'c');
         charGraph.addEdge('b', 'd');
@@ -48,7 +48,7 @@ public class AdjListGraphTest {
         AdjListGraph<Character> charGraph = new AdjListGraph<Character>();
         Map<Character, Boolean> discovered = new HashMap<Character, Boolean>();
         Stack<Character> nodeStack = new Stack<Character>();
-        /* add nodes to the graph */
+        /* add nodes to the vertices */
         charGraph.addEdge('a', 'b');
         charGraph.addEdge('a', 'c');
         charGraph.addEdge('b', 'd');
