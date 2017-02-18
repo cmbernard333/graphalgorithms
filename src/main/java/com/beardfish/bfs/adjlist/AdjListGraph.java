@@ -7,14 +7,12 @@ import java.util.*;
 /**
  * Created by christian on 3/11/14.
  */
-public class AdjListGraph<E,V> {
+public class AdjListGraph<V> {
 
     public final Map<V,Vertex> vertices;
-    public final Map<VertexPair,Path> paths;
 
     public AdjListGraph () {
         this.vertices = new HashMap<V,Vertex>();
-        this.paths = new ConcurrentHashMap<VertexPair,Path>();
     }
 
     public boolean addEdge(V src, V dst) {
@@ -89,40 +87,33 @@ public class AdjListGraph<E,V> {
         if(dstVert==null) { return null; }
         /* check for direct edge between nodes */
         Edge edge = this.getEdge(srcVert,dstVert);
-        Path path = null;
+        Path path = new Path();
+        PriorityQueue<Edge> priorityQueue = new PriorityQueue(new EdgeComparator<);
         if(edge!=null) {
-            path = new Path();
             path.addEdge(edge);
             return path;
         }
         /* build the min prority queue */
-        Map<Vertex,Node> nodes = new HashMap<Vertex,Node>();
-        for (Vertex v : this.vertices.values()) {
-            Node n = new Node(v);
-            if(v==srcVert) {
-                n.distance = 0;
-            }
-            nodes.put(v,n);
+        priorityQueue.add(srcVert.getNeighbors());
+        while(!priorityQueue.isEmpty())
+        {
+            priorityQueue.poll();
         }
-        /* chart the course!*/
-        Set<Node> otherNodes = new HashSet<Node>(nodes.values());
-        Set<Node> nodesOnPath = new HashSet<Node>();
-        Node nextNode = null;
-        while(!otherNodes.isEmpty()) {
-//            nextNode = extractMin(otherNodes);
-//            if(nextNode==dstVert) {
-//
-//            }
-//            nodesOnPath.add(nextNode);
+    }
+
+    private class EdgeComparatorMin implements Comparator<Edge>
+    {
+        @Override
+        public int compare(Edge a, Edge b)
+        {
+            return !Edge.compareTo(a,b);
         }
-
-
     }
 
     /**
      * Represents an edge between two vertices in a vertices
      */
-    public final class Edge {
+    public final class Edge implements Comparable<Edge>{
 
         private final Vertex src;
         private final Vertex dst;
@@ -134,12 +125,23 @@ public class AdjListGraph<E,V> {
             this.weight = weight;
         }
 
+        @Override
+        public int compareTo(Edge edge)
+        {
+            return Double.compareTo(this.getWeight(),edge.getWeight()); // if left comes before right (>0)
+        }
+
         public Vertex getSrc() {
             return this.src;
         }
 
         public Vertex getDst() {
             return this.dst;
+        }
+
+        public double getWeight()
+        {
+            return this.weight;
         }
 
     }
