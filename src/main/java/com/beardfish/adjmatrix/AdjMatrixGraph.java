@@ -1,4 +1,4 @@
-package com.beardfish.bfs.adjmatrix;
+package com.beardfish.adjmatrix;
 
 import java.util.ArrayList;
 import java.util.Iterator;

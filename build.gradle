@@ -1,6 +1,9 @@
 apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'eclipse'
+
+compileJava
+{
+	options.compilerArgs += ["-Xlint:unchecked"]
+}
 
 repositories {
     mavenCentral()
@@ -9,4 +12,10 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile group: 'log4j', name: 'log4j', version: '1.2.17'
+}
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
 }
