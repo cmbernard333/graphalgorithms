@@ -1,7 +1,5 @@
 package com.beardfish.bfs.adjlist;
 
-
-
 import java.util.*;
 
 /**
@@ -13,10 +11,6 @@ public class AdjListGraph<V> {
 
     public AdjListGraph () {
         this.vertices = new HashMap<V,Vertex>();
-    }
-
-    public boolean addEdge(V src, V dst) {
-        return this.addEdge(src,dst,0);
     }
 
     public boolean addEdge(V src, V dst, double weight) {
@@ -93,149 +87,6 @@ public class AdjListGraph<V> {
             path.addEdge(edge);
             return path;
         }
-        /* build the min prority queue */
-        priorityQueue.add(srcVert.getNeighbors());
-        while(!priorityQueue.isEmpty())
-        {
-            priorityQueue.poll();
-        }
-    }
-
-    private class EdgeComparatorMin implements Comparator<Edge>
-    {
-        @Override
-        public int compare(Edge a, Edge b)
-        {
-            return !Edge.compareTo(a,b);
-        }
-    }
-
-    /**
-     * Represents an edge between two vertices in a vertices
-     */
-    public final class Edge implements Comparable<Edge>{
-
-        private final Vertex src;
-        private final Vertex dst;
-        private double weight;
-
-        public Edge(Vertex src, Vertex dst, double weight) {
-            this.src = src;
-            this.dst = dst;
-            this.weight = weight;
-        }
-
-        @Override
-        public int compareTo(Edge edge)
-        {
-            return Double.compareTo(this.getWeight(),edge.getWeight()); // if left comes before right (>0)
-        }
-
-        public Vertex getSrc() {
-            return this.src;
-        }
-
-        public Vertex getDst() {
-            return this.dst;
-        }
-
-        public double getWeight()
-        {
-            return this.weight;
-        }
-
-    }
-
-    /**
-     * Represents a vertex in a vertices with a particular value
-     */
-    public final class Vertex {
-
-        private final V value;
-        private final Map<Vertex,Edge> edges;
-
-        public Vertex(V value) {
-            this.value = value;
-            this.edges = new HashMap<Vertex,Edge>();
-        }
-
-        public V getValue() {
-            return this.value;
-        }
-
-        public Collection<Edge> getNeighbors() {
-            return edges.values();
-        }
-    }
-
-    /**
-     * Represents a path from a source vertex to a dst vertex
-     */
-    public final class Path {
-        public List<Edge> edges;
-        public double weight;
-
-        public Path() {
-            this.edges = new LinkedList<Edge>();
-            this.weight = 0;
-        }
-
-        public void addEdge(Edge edge) {
-            this.edges.add(edge);
-            this.weight += edge.weight;
-        }
-    }
-
-    /**
-     * Node class representing a vertex with a distance from another vertex
-     */
-    public final class Node implements Comparable<Node>{
-        public Vertex value;
-        public Node previous;
-        private long distance = Integer.MAX_VALUE;
-
-        public Node(Vertex v) {
-            this.value = v;
-        }
-
-        @Override
-        public int compareTo(Node node) {
-            if(this.distance>node.distance) {
-                return 1;
-            } else if(this.distance==node.distance) {
-                return 0;
-            } else {
-                return -1;
-            }
-        }
-
-    }
-
-    private final class VertexPair {
-
-        private Vertex src;
-        private Vertex dst;
-
-        private VertexPair(Vertex src, Vertex dst) {
-            this.src = src;
-            this.dst = dst;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if(!this.getClass().equals(o.getClass())) {
-                return false;
-            }
-            VertexPair pair = (VertexPair) o;
-            return this.src == pair.src && this.dst == pair.dst;
-        }
-
-        @Override
-        public int hashCode() {
-            int h = 0;
-            h+= this.src == null ? 0 : src.hashCode();
-            h+= this.dst == null ? 0 : dst.hashCode();
-            return h;
-        }
+		
     }
 }
