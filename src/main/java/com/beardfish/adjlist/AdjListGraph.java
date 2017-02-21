@@ -40,4 +40,8 @@ public class AdjListGraph<V> {
     public Set<Map.Entry<V,Double>> getNeighbors(V src) {
         return this.adjList.get(src).entrySet();
     }
+
+    public Set<V> getVertices() {
+        return this.adjList.keySet();
+    }
 }
