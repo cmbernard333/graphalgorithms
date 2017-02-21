@@ -1,6 +1,14 @@
 package com.beardfish.adjlist;
 
-import java.util.*;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.AbstractMap.SimpleEntry;
 
 public class AdjListGraph<V> {
     /* maps a Vertex to its neighbors paired with the weight between them */
@@ -43,5 +51,76 @@ public class AdjListGraph<V> {
 
     public Set<V> getVertices() {
         return this.adjList.keySet();
+    }
+
+    /* simple comparator to allow entries in AdjListGraph to be sorted in a PriorityQueue by smallest value */
+    public static class EdgeComparator<E> implements Comparator<Map.Entry<E,Double>>
+    {
+        @Override
+        public int compare(Map.Entry<E,Double> edgeA, Map.Entry<E,Double> edgeB) {
+            return edgeA.getValue().compareTo(edgeB.getValue());
+        }
+    }
+
+    public List<Map.Entry<V,Double>> shortestPath(V src, V dst) {
+        Map<V,Double> dist = new HashMap<>(); // maps the vertex and the distance from the source
+        Set<V> explored = new HashSet<>(); // set of explored vertices
+        PriorityQueue<Map.Entry<V,Double>> pq = new PriorityQueue<>(new EdgeComparator<V>()); // the priority queue to keep track of minimum edges
+        Map.Entry<V,Double> edge = new SimpleEntry<V,Double>(src,0.0); // the first edge to explore from
+        List<Map.Entry<V,Double>> solution = new LinkedList<Map.Entry<V,Double>>();
+
+        V vertex = null;
+        V vertexNeighbor = null;
+        Double weight = null;
+        Double vertexNeighborWeight = null;
+        Double altWeight = null;
+
+        /* distance from itself to all other nodes is current infinity */
+        for(V vertexInGraph : this.getVertices())
+        {
+            dist.put(vertexInGraph, Double.POSITIVE_INFINITY);
+        }   
+
+        /* distance to itself is 0 */
+        dist.put(src,0.0);
+        /* append self (i.e. src) to start here */
+        pq.add(edge);
+
+        /* NOTE: java does not have a built in priority queue with decrease key - you can just add the new ndoe again but with a lower weight */
+        /* we are exploring the neighbors as Map.Entry<Character,Double> where the double represents the weight from the current vertex */
+        while(!pq.isEmpty())
+        {
+            edge = pq.poll(); // extract the minimum
+            vertex = edge.getKey();
+            weight = edge.getValue();
+            explored.add(vertex); // append the vertex we've already explored
+            solution.add(edge);
+            /* check to see if we should stop */
+            if(vertex.equals(dst))
+            {
+                return solution;
+            }
+            for(Map.Entry<V,Double> neighbor : this.getNeighbors(vertex))
+            {
+                vertexNeighbor = neighbor.getKey();
+                vertexNeighborWeight = neighbor.getValue();
+                if(!explored.contains(vertexNeighbor)) {
+                    altWeight = dist.get(vertex) + vertexNeighborWeight; // for the base case: distance to self will be 0 at the beginning
+                    if(!pq.contains(neighbor)) {
+                        pq.add(neighbor);
+                    }
+                    /* distance of vertex from src + distance between current vertex and neighbor < distance from src */
+                    /* more simply: if new route is shorter than the route directly from src to the current neighbor */
+                    else if(altWeight < dist.get(vertexNeighbor)) {
+                       pq.add(new SimpleEntry<V,Double>(vertexNeighbor, altWeight)); /* add into the queue the new minimum distance */
+                    } else {
+                        solution.remove(solution.size()-1);
+                    }
+                }
+            }
+        }
+        /* TODO */
+        return null;
+
     }
 }
