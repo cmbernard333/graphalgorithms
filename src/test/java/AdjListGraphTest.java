@@ -89,7 +89,10 @@ public class AdjListGraphTest {
         Map.Entry<Character,Double> edge = new SimpleEntry<Character,Double>('a',0.0); // the first edge to explore from
 
         Character vertex = null;
+	Character vertexNeighbor = null;
         Double weight = null;
+	Double vertexNeighborWeight = null;
+	Double altWeight = null;
 
         adjListGraph.addEdge('a','b',7);
         adjListGraph.addEdge('b','d',15);
@@ -101,12 +104,18 @@ public class AdjListGraphTest {
         adjListGraph.addEdge('c','d',11);
         adjListGraph.addEdge('c','f',2);
 
+	/* distance from itself to all other nodes is current infinity */
+	for(Character vertex : adjListGraph.getVertices())
+	{
+		dist.put(vertex, Double.POSITIVE_INFINITY);
+	}	
+
         /* distance to itself is 0 */
         dist.put('a',0.0);
         /* append self (i.e. src) to start here */
         pq.add(edge);
 
-        /* NOTE: java does not hae a built in priority queue with decrease key - you can just add the new ndoe again but with a lower weight */
+        /* NOTE: java does not have a built in priority queue with decrease key - you can just add the new ndoe again but with a lower weight */
         /* we are exploring the neighbors as Map.Entry<Character,Double> where the double represents the weight from the current vertex */
         while(!pq.isEmpty())
         {
@@ -116,10 +125,15 @@ public class AdjListGraphTest {
             explored.add(vertex); // append the vertex we've already explored
             for(Map.Entry<Character,Double> edge : adjListGraph.getNeighbors(vertex)) 
             {
-                if(!explored.contains(vertex) {
-                    if(!pq.contains(edge)) {
-                        pq.add(edge);
-                    }
+		vertexNeighbor = edge.getKey();
+		vertexNeighborWeight = edge.getValue();
+                if(!explored.contains(vertexNeighbor) {
+		    /* distance of vertex from src + distance between current vertex and neighbor < distance from src */
+		    altWeight = dist.get(vertex).getValue() + vertexNeighborWeight;
+		    if(altWeight < dist.get(vertex).getValue()) 
+		    {
+		    	pq.add(new SimpleEntry());	    
+		    }
                 }
             }
         }
