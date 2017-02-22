@@ -98,8 +98,9 @@ public class AdjListGraph<V> {
             /* check to see if we should stop */
             if(vertex.equals(dst))
             {
-                System.out.println("dist"+dist);
-                System.out.println("prev"+prev);
+                System.out.println("dist: "+dist);
+                System.out.println("prev: "+prev);
+                System.out.println("edge: "+edge);
                 return prev;
             }
 
