@@ -62,13 +62,12 @@ public class AdjListGraph<V> {
         }
     }
 
-    public List<Map.Entry<V,Double>> shortestPath(V src, V dst) {
+    public Map<V,Map.Entry<V,Double>> shortestPath(V src, V dst) {
         Map<V,Double> dist = new HashMap<>(); // maps the vertex and the distance from the source
-        Map<V,V> prev = new HashMap();
+        Map<V,Map.Entry<V,Double>> prev = new HashMap<>();
         Set<V> explored = new HashSet<>(); // set of explored vertices
         PriorityQueue<Map.Entry<V,Double>> pq = new PriorityQueue<>(new EdgeComparator<V>()); // the priority queue to keep track of minimum edges
         Map.Entry<V,Double> edge = new SimpleEntry<V,Double>(src,0.0); // the first edge to explore from
-        List<Map.Entry<V,Double>> solution = new LinkedList<Map.Entry<V,Double>>();
 
         V vertex = null;
         V vertexNeighbor = null;
@@ -99,8 +98,9 @@ public class AdjListGraph<V> {
             /* check to see if we should stop */
             if(vertex.equals(dst))
             {
-                System.out.println(dist);
-                return solution;
+                System.out.println("dist"+dist);
+                System.out.println("prev"+prev);
+                return prev;
             }
 
             /* 
@@ -115,18 +115,13 @@ public class AdjListGraph<V> {
                 System.out.println("Vertex: "+vertex+" Neighbor: "+vertexNeighbor+" Distance: "+vertexNeighborWeight);
                 if(!explored.contains(vertexNeighbor)) {
                     altWeight = dist.get(vertex) + vertexNeighborWeight; // for the base case: distance to self will be 0 at the beginning
-                    if(!pq.contains(neighbor)) {
-                        System.out.println("Unvisited vertex "+vertexNeighbor);
-                        dist.put(vertexNeighbor, vertexNeighborWeight);
-                        pq.add(neighbor);
-                    }
                     /* distance of vertex from src + distance between current vertex and neighbor < distance from src */
                     /* more simply: if new route is shorter than the route directly from src to the current neighbor */
-                    else if(altWeight < dist.get(vertexNeighbor)) {
+                    if(altWeight < dist.get(vertexNeighbor)) {
                         dist.put(vertexNeighbor, altWeight);
+                        prev.put(vertexNeighbor, edge);
                         pq.add(new SimpleEntry<V,Double>(vertexNeighbor, dist.get(vertexNeighbor))); /* add into the queue the new minimum distance */
-
-                    }
+                    }   
                 }
             }
         }

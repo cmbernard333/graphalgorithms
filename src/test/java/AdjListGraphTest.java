@@ -80,7 +80,7 @@ public class AdjListGraphTest {
     @Test
     public void testDjikstras() {
         AdjListGraph<Character> adjListGraph = new AdjListGraph(); // the graph
-        List<Map.Entry<Character, Double>> solution = null;
+        Map<Character,Map.Entry<Character,Double>> solution = null;
         
         adjListGraph.addEdge('a','b',7);
         adjListGraph.addEdge('b','d',15);
@@ -93,6 +93,17 @@ public class AdjListGraphTest {
         adjListGraph.addEdge('c','f',2);
 
         solution = adjListGraph.shortestPath('a','e');
-        System.out.println(Arrays.toString(solution.toArray()));
+        printSolution('e',solution);
+    }
+
+    public void printSolution(Character dst, Map<Character, Map.Entry<Character,Double>> solution)
+    {
+        Map.Entry<Character,Double> edge = solution.get(dst);
+        Character prevVertex = dst;
+        do {
+            System.out.println(edge);
+            prevVertex = edge.getKey();
+            edge = solution.get(edge.getKey());
+        } while(edge!=null);
     }
 }
