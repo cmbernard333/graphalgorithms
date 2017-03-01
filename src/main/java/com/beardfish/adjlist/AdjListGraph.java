@@ -94,13 +94,9 @@ public class AdjListGraph<V> {
             vertex = edge.getKey();
             weight = edge.getValue();
             explored.add(vertex); // append the vertex we've already explored
-            System.out.println("Exploring "+vertex);
             /* check to see if we should stop */
             if(vertex.equals(dst))
             {
-                System.out.println("dist: "+dist);
-                System.out.println("prev: "+prev);
-                System.out.println("edge: "+edge);
                 return prev;
             }
 
@@ -113,7 +109,6 @@ public class AdjListGraph<V> {
             {
                 vertexNeighbor = neighbor.getKey();
                 vertexNeighborWeight = neighbor.getValue();
-                System.out.println("Vertex: "+vertex+" Neighbor: "+vertexNeighbor+" Distance: "+vertexNeighborWeight);
                 if(!explored.contains(vertexNeighbor)) {
                     altWeight = dist.get(vertex) + vertexNeighborWeight; // for the base case: distance to self will be 0 at the beginning
                     /* distance of vertex from src + distance between current vertex and neighbor < distance from src */
@@ -128,6 +123,56 @@ public class AdjListGraph<V> {
         }
         /* TODO */
         return null;
+    }
 
+    public Map<V,Map.Entry<V,Double>> minimumSpanningTree(V src) {
+        Map<V,Double> dist = new HashMap<>(); // maps the vertex and the distance from the source
+        Map<V,Map.Entry<V,Double>> parent = new HashMap<>();
+        Set<V> explored = new HashSet<>(); // set of explored vertices
+        PriorityQueue<Map.Entry<V,Double>> pq = new PriorityQueue<>(new EdgeComparator<V>()); // the priority queue to keep track of minimum edges
+        Map.Entry<V,Double> edge = new SimpleEntry<V,Double>(src,0.0); // the first edge to explore from
+
+        V vertex = null;
+        V vertexNeighbor = null;
+        Double weight = null;
+        Double vertexNeighborWeight = null;
+        Double altWeight = null;
+
+        /* distance from itself to all other nodes is current infinity */
+        for(V vertexInGraph : this.getVertices())
+        {
+            dist.put(vertexInGraph, Double.POSITIVE_INFINITY);
+        }   
+
+        /* distance to itself is 0 */
+        dist.put(src,0.0);
+        /* append self (i.e. src) to start here */
+        pq.add(edge);
+
+        /* NOTE: java does not have a built in priority queue with decrease key - you can just add the new ndoe again but with a lower weight */
+        /* we are exploring the neighbors as Map.Entry<Character,Double> where the double represents the weight from the current vertex */
+        while(!pq.isEmpty())
+        {
+            edge = pq.poll(); // extract the minimum
+            vertex = edge.getKey();
+            weight = edge.getValue();
+            explored.add(vertex); // append the vertex we've already explored
+
+            for(Map.Entry<V,Double> neighbor : this.getNeighbors(vertex))
+            {
+                vertexNeighbor = neighbor.getKey();
+                vertexNeighborWeight = neighbor.getValue();
+                if(!explored.contains(vertexNeighbor)) {
+		    /* minimum spanning tree is trying to find the minimum tree composed of minimum weights of the edges */
+                    if(vertexNeighborWeight < dist.get(vertexNeighbor)) {
+                        dist.put(vertexNeighbor, vertexNeighborWeight);
+                        parent.put(vertexNeighbor, edge);
+                        pq.add(new SimpleEntry<V,Double>(vertexNeighbor, dist.get(vertexNeighbor))); /* add into the queue the new minimum distance */
+                    }   
+                }
+            }
+        }
+        /* TODO */
+        return parent;  
     }
 }

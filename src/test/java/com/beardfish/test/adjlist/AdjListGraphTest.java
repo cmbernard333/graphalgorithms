@@ -1,5 +1,6 @@
+package com.beardfish.test.adjlist;
 /**
- * Created by christian on 3/11/14.
+ * Created by christian on 2/20/17.
  */
 
 import com.beardfish.adjlist.AdjListGraph;
@@ -78,6 +79,56 @@ public class AdjListGraphTest {
     }
 
     @Test
+    public void testPrimms() {
+        AdjListGraph<Integer> adjListGraph = new AdjListGraph(); // the graph
+        Map<Integer,Map.Entry<Integer,Double>> solution = null;
+
+    	adjListGraph.addEdge(0, 1, 4);
+    	adjListGraph.addEdge(0, 7, 8);
+    	adjListGraph.addEdge(1, 2, 8);
+    	adjListGraph.addEdge(1, 7, 11);
+    	adjListGraph.addEdge(2, 3, 7);
+    	adjListGraph.addEdge(2, 8, 2);
+    	adjListGraph.addEdge(2, 5, 4);
+    	adjListGraph.addEdge(3, 4, 9);
+    	adjListGraph.addEdge(3, 5, 14);
+    	adjListGraph.addEdge(4, 5, 10);
+    	adjListGraph.addEdge(5, 6, 2);
+    	adjListGraph.addEdge(6, 7, 1);
+    	adjListGraph.addEdge(6, 8, 6);
+    	adjListGraph.addEdge(7, 8, 7);
+
+	solution = adjListGraph.minimumSpanningTree(0);
+	System.out.println(solution);
+    }
+
+
+
+    @Test
+    public void testDjikstrasComplexGraph() {
+        AdjListGraph<Integer> adjListGraph = new AdjListGraph(); // the graph
+        Map<Integer,Map.Entry<Integer,Double>> solution = null;
+
+        adjListGraph.addEdge(0,1,4);
+        adjListGraph.addEdge(0,7,8);
+        adjListGraph.addEdge(1,2,8);
+        adjListGraph.addEdge(1,7,11);
+        adjListGraph.addEdge(6,5,2);
+        adjListGraph.addEdge(7,8,7);
+        adjListGraph.addEdge(7,6,1);
+        adjListGraph.addEdge(2,3,7);
+        adjListGraph.addEdge(2,5,4);
+        adjListGraph.addEdge(2,8,2);
+        adjListGraph.addEdge(8,6,6);
+        adjListGraph.addEdge(3,5,14);
+        adjListGraph.addEdge(3,4,4);
+        adjListGraph.addEdge(5,4,10);
+
+	solution = adjListGraph.shortestPath(0,4);
+	printSolution(4,solution);
+    }
+
+    @Test
     public void testDjikstras() {
         AdjListGraph<Character> adjListGraph = new AdjListGraph(); // the graph
         Map<Character,Map.Entry<Character,Double>> solution = null;
@@ -96,12 +147,13 @@ public class AdjListGraphTest {
         printSolution('e',solution);
     }
 
-    public void printSolution(Character dst, Map<Character, Map.Entry<Character,Double>> solution)
+    public <V> void printSolution(V dst, Map<V, Map.Entry<V,Double>> solution)
     {
-        Map.Entry<Character,Double> edge = solution.get(dst);
-        Character prevVertex = dst;
+        Map.Entry<V,Double> edge = solution.get(dst);
+        V prevVertex = dst;
+	System.out.print(dst+"->");
         do {
-            System.out.println(edge);
+            System.out.print(edge.getKey()+"->");
             prevVertex = edge.getKey();
             edge = solution.get(edge.getKey());
         } while(edge!=null);
